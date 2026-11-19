@@ -171,6 +171,11 @@ export DB_PASSWORD=your_password
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=mysql
 ```
 
+### Run in GitHub Codespaces (no local Java needed)
+
+Click **Code → Codespaces → Create codespace on main**, then run `./mvnw spring-boot:run` in the terminal.
+Port 8080 opens automatically.
+
 ### Run with Docker
 
 ```bash

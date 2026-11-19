@@ -1,0 +1,14 @@
+{
+  "name": "EventSphere (Java 21)",
+  "image": "mcr.microsoft.com/devcontainers/java:1-21-bookworm",
+  "forwardPorts": [8080],
+  "portsAttributes": {
+    "8080": { "label": "EventSphere", "onAutoForward": "openBrowser" }
+  },
+  "postCreateCommand": "./mvnw -B -q dependency:go-offline",
+  "customizations": {
+    "vscode": {
+      "extensions": ["vscjava.vscode-java-pack", "vmware.vscode-boot-dev-pack"]
+    }
+  }
+}
