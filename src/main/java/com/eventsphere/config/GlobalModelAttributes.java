@@ -9,10 +9,16 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 @ControllerAdvice(basePackages = "com.eventsphere.web")
 public class GlobalModelAttributes {
 
+    /** Indian Rupee sign. Written as a Java escape so file encodings can never garble it. */
+    private static final String DEFAULT_CURRENCY = "\u20B9";
+
     private final String currencySymbol;
 
-    public GlobalModelAttributes(@Value("${app.currency-symbol:Rs.}") String currencySymbol) {
-        this.currencySymbol = currencySymbol;
+    /**
+     * Override with app.currency-symbol, e.g. app.currency-symbol=$ (plain ASCII is safest in .properties files).
+     */
+    public GlobalModelAttributes(@Value("${app.currency-symbol:}") String currencySymbol) {
+        this.currencySymbol = currencySymbol.isBlank() ? DEFAULT_CURRENCY : currencySymbol;
     }
 
     @ModelAttribute("currency")
