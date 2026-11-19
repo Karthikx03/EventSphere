@@ -6,7 +6,7 @@
     "8080": { "label": "EventSphere", "onAutoForward": "openBrowser" }
   },
   "postCreateCommand": "./mvnw -B -q dependency:go-offline",
-  "postAttachCommand": "./mvnw spring-boot:run",
+  "postAttachCommand": "bash .devcontainer/start.sh",
   "customizations": {
     "vscode": {
       "extensions": ["vscjava.vscode-java-pack", "vmware.vscode-boot-dev-pack"]
