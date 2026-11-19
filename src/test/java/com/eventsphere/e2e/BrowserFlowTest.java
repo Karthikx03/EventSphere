@@ -30,7 +30,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * X-Forwarded-* headers a reverse proxy (GitHub Codespaces, Render, nginx) adds, so the
  * app is tested the way it is deployed.
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+// own in-memory database, so shutting this context down never touches the other test contexts
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        properties = "spring.datasource.url=jdbc:h2:mem:e2e-flows;DB_CLOSE_DELAY=-1")
 @DirtiesContext
 class BrowserFlowTest {
 
