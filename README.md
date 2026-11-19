@@ -173,7 +173,7 @@ export DB_PASSWORD=your_password
 
 ### Run in GitHub Codespaces (no local Java needed)
 
-Click **Code → Codespaces → Create codespace on main**, then run `./mvnw spring-boot:run` in the terminal.
+Click **Code → Codespaces → Create codespace on main**, the app starts by itself (or run `./mvnw spring-boot:run`).
 Port 8080 opens automatically.
 
 ### Run with Docker
