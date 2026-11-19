@@ -230,6 +230,85 @@ class BrowserFlowTest {
         assertThat(events.body).contains("\u20B9149.00").doesNotContain("\u00E2\u0082\u00B9");
     }
 
+    // ------------------------------------------------- reported issues (regression tests)
+
+    @Test
+    void malformedEventIdShowsFriendly404WithoutStackTrace() throws Exception {
+        Page page = get("/events/abc");
+        assertThat(page.status).isEqualTo(404);
+        assertThat(page.contentType).containsIgnoringCase("text/html");
+        assertThat(page.body).contains("That page does not exist").contains("Back to events")
+                .doesNotContain("Exception").doesNotContain("at org.springframework").doesNotContain("trace");
+    }
+
+    @Test
+    void unknownUrlShowsFriendly404() throws Exception {
+        Page page = get("/no-such-page");
+        assertThat(page.status).isEqualTo(404);
+        assertThat(page.body).contains("That page does not exist").doesNotContain("Exception");
+    }
+
+    @Test
+    void categoryFilterAcceptsAnyCapitalisationAndIgnoresUnknownValues() throws Exception {
+        for (String value : new String[]{"Seminar", "seminar", "SEMINAR"}) {
+            Page page = get("/events?category=" + value);
+            assertOk(page);
+            assertThat(page.body).contains("Resume &amp; Interview Bootcamp").doesNotContain("CodeSprint");
+        }
+        Page tech = get("/events?category=Tech+Talk");
+        assertOk(tech);
+        assertThat(tech.body).contains("AI in Everyday Life").doesNotContain("CodeSprint");
+
+        Page unknown = get("/events?category=Bogus");
+        assertOk(unknown);
+        assertThat(unknown.body).contains("7 event(s) found");
+    }
+
+    @Test
+    void loginPageDoesNotShowDemoPasswordsByDefault() throws Exception {
+        Page page = get("/login");
+        assertThat(page.body).doesNotContain("admin123").doesNotContain("student123").doesNotContain("Demo accounts");
+    }
+
+    @Test
+    void signUpFormValidatesInTheBrowser() throws Exception {
+        String body = get("/register").body;
+        assertThat(body).doesNotContain("novalidate");
+        assertThat(Pattern.compile("<input[^>]*required").matcher(body).results().count()).isEqualTo(4);
+        assertThat(body).contains("minlength=\"6\"").contains("type=\"email\"");
+    }
+
+    @Test
+    void emptyPasswordShowsASingleError() throws Exception {
+        Page form = get("/register");
+        Page result = post("/register", Map.of("_csrf", csrf(form), "fullName", "Meera", "email", "meera@example.com",
+                "password", "", "confirmPassword", ""));
+        assertOk(result);
+        assertThat(result.body).contains("Password must be 6 to 64 characters").doesNotContain("Please choose a password");
+    }
+
+    @Test
+    void lettersInANumberFieldGiveAFriendlyMessage() throws Exception {
+        login("admin@eventsphere.com", "admin123");
+        Page form = get("/admin/events/new");
+        Page result = post("/admin/events", Map.of("_csrf", csrf(form), "title", "T", "description", "D",
+                "category", "TECH", "venue", "V", "startTime", "2099-01-01T10:00", "capacity", "lots", "price", "abc"));
+        assertOk(result);
+        assertThat(result.body).contains("Please enter a whole number").contains("Please enter a valid amount")
+                .doesNotContain("Failed to convert");
+    }
+
+    @Test
+    void unbookedEventsShowAvailabilityInsteadOfAnEmptyBar() throws Exception {
+        String body = get("/events").body;
+        assertThat(body).contains("All 250 seats available").doesNotContain("progress-bar");
+    }
+
+    @Test
+    void footerHasNoTechStackFiller() throws Exception {
+        assertThat(get("/").body).doesNotContain("Built with Spring Boot");
+    }
+
     // ---------------------------------------------------------------- helpers
 
     private void login(String email, String password) throws Exception {

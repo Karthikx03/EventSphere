@@ -63,6 +63,23 @@ class ApiIntegrationTest {
     }
 
     @Test
+    void malformedIdReturns400ProblemDetailWithoutStackTrace() throws Exception {
+        mvc.perform(get("/api/events/abc"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.title").value("Invalid parameter"))
+                .andExpect(jsonPath("$.trace").doesNotExist())
+                .andExpect(jsonPath("$.exception").doesNotExist());
+    }
+
+    @Test
+    void apiCategoryFilterIsCaseInsensitive() throws Exception {
+        mvc.perform(get("/api/events?category=music"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].category").value("MUSIC"));
+    }
+
+    @Test
     void bookingRequiresAuthentication() throws Exception {
         mvc.perform(post("/api/bookings").contentType(MediaType.APPLICATION_JSON)
                         .content("{\"eventId\": " + eventId + ", \"seats\": 1}"))

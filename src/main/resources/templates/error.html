@@ -5,8 +5,13 @@
 <nav th:replace="~{fragments/layout :: navbar}"></nav>
 <main class="container text-center py-5">
     <div class="display-1 fw-bold text-muted" th:text="${status} ?: 'Oops'">500</div>
-    <p class="lead" th:text="${status == 403} ? 'You do not have permission to view this page.' : 'Something went wrong.'">Error</p>
-    <a th:href="@{/}" class="btn btn-primary">Go home</a>
+    <p class="lead" th:switch="${status}">
+        <span th:case="400">That request didn't look right. Please go back and try again.</span>
+        <span th:case="403">You do not have permission to view this page.</span>
+        <span th:case="404">That page does not exist.</span>
+        <span th:case="*">Something went wrong on our side. Please try again in a moment.</span>
+    </p>
+    <a th:href="@{/events}" class="btn btn-primary">Back to events</a>
 </main>
 <th:block th:replace="~{fragments/layout :: footer}"></th:block>
 </body>

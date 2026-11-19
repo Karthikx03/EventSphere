@@ -7,6 +7,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -31,6 +32,12 @@ public class ApiExceptionHandler {
     public ProblemDetail handleConcurrentUpdate(ObjectOptimisticLockingFailureException ex) {
         return problem(HttpStatus.CONFLICT, "Concurrent update",
                 "Someone else changed this event at the same time. Please try again.");
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ProblemDetail handleTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        return problem(HttpStatus.BAD_REQUEST, "Invalid parameter",
+                "'" + ex.getName() + "' has an invalid value");
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

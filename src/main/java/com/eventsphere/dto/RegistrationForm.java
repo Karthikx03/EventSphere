@@ -2,6 +2,7 @@ package com.eventsphere.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 /** Backing object for the sign-up form. */
@@ -15,7 +16,8 @@ public class RegistrationForm {
     @Email(message = "Please enter a valid email address")
     private String email;
 
-    @NotBlank(message = "Please choose a password")
+    // @NotNull + @Size (not @NotBlank) so an empty password shows one message, not two
+    @NotNull(message = "Password must be 6 to 64 characters")
     @Size(min = 6, max = 64, message = "Password must be 6 to 64 characters")
     private String password;
 

@@ -8,6 +8,7 @@ import com.eventsphere.repository.EventRepository;
 import com.eventsphere.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -31,12 +32,18 @@ public class DataSeeder implements CommandLineRunner {
     private final UserRepository userRepository;
     private final EventRepository eventRepository;
     private final PasswordEncoder passwordEncoder;
+    private final String adminPassword;
+    private final String studentPassword;
 
     public DataSeeder(UserRepository userRepository, EventRepository eventRepository,
-                      PasswordEncoder passwordEncoder) {
+                      PasswordEncoder passwordEncoder,
+                      @Value("${app.seed.admin-password:admin123}") String adminPassword,
+                      @Value("${app.seed.student-password:student123}") String studentPassword) {
         this.userRepository = userRepository;
         this.eventRepository = eventRepository;
         this.passwordEncoder = passwordEncoder;
+        this.adminPassword = adminPassword;
+        this.studentPassword = studentPassword;
     }
 
     @Override
@@ -44,10 +51,10 @@ public class DataSeeder implements CommandLineRunner {
     public void run(String... args) {
         if (userRepository.count() == 0) {
             userRepository.save(new User("Admin", "admin@eventsphere.com",
-                    passwordEncoder.encode("admin123"), Role.ADMIN));
+                    passwordEncoder.encode(adminPassword), Role.ADMIN));
             userRepository.save(new User("Demo Student", "student@eventsphere.com",
-                    passwordEncoder.encode("student123"), Role.USER));
-            log.info("Seeded demo accounts: admin@eventsphere.com / admin123, student@eventsphere.com / student123");
+                    passwordEncoder.encode(studentPassword), Role.USER));
+            log.info("Seeded demo accounts admin@eventsphere.com and student@eventsphere.com");
         }
 
         if (eventRepository.count() == 0) {

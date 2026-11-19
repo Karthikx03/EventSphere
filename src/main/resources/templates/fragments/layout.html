@@ -57,8 +57,12 @@
 <th:block th:fragment="footer">
     <footer class="es-footer mt-5 py-4">
         <div class="container d-flex flex-column flex-md-row justify-content-between gap-2 small">
-            <span>&copy; EventSphere · Campus Event Management System</span>
-            <span>Built with Spring Boot, Spring Security, Spring Data JPA &amp; Thymeleaf</span>
+            <span>&copy; EventSphere · Every campus event in one place</span>
+            <span class="d-flex gap-3">
+                <a class="link-light link-opacity-75" th:href="@{/events}">Events</a>
+                <a class="link-light link-opacity-75" th:href="@{/bookings}">My tickets</a>
+                <a class="link-light link-opacity-75" th:href="@{/register}">Sign up</a>
+            </span>
         </div>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -77,12 +81,14 @@
             <span th:text="${#temporals.format(e.startTime, 'EEE, dd MMM yyyy · hh:mm a')}">Date</span></p>
         <p class="text-muted small"><i class="bi bi-geo-alt me-1"></i><span th:text="${e.venue}">Venue</span></p>
         <div class="mt-auto">
-            <div class="progress es-progress mb-1" role="progressbar" th:aria-valuenow="${e.occupancyPercent}"
-                 aria-valuemin="0" aria-valuemax="100">
+            <div th:if="${e.seatsBooked > 0}" class="progress es-progress mb-1" role="progressbar"
+                 th:aria-valuenow="${e.occupancyPercent}" aria-valuemin="0" aria-valuemax="100"
+                 th:aria-label="${e.occupancyPercent} + '% of seats booked'">
                 <div class="progress-bar" th:style="'width:' + ${e.occupancyPercent} + '%'"></div>
             </div>
             <div class="d-flex justify-content-between align-items-center">
-                <small th:if="${!e.soldOut}" class="text-muted" th:text="${e.availableSeats} + ' of ' + ${e.capacity} + ' seats left'">seats</small>
+                <small th:if="${!e.soldOut and e.seatsBooked == 0}" class="text-success fw-semibold" th:text="'All ' + ${e.capacity} + ' seats available'">seats</small>
+                <small th:if="${!e.soldOut and e.seatsBooked > 0}" class="text-muted" th:text="${e.availableSeats} + ' of ' + ${e.capacity} + ' seats left'">seats</small>
                 <small th:if="${e.soldOut}" class="text-danger fw-semibold">Sold out</small>
                 <a th:href="@{/events/{id}(id=${e.id})}" class="btn btn-sm btn-primary">View</a>
             </div>

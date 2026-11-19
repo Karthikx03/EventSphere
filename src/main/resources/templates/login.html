@@ -30,7 +30,7 @@
                     <p class="text-center small mt-3 mb-0">New here? <a th:href="@{/register}">Create an account</a></p>
                 </div>
             </div>
-            <div class="es-demo small mt-3">
+            <div th:if="${showDemoAccounts}" class="es-demo small mt-3">
                 <strong>Demo accounts</strong><br>
                 Admin: admin@eventsphere.com / admin123<br>
                 Student: student@eventsphere.com / student123

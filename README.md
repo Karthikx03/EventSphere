@@ -153,6 +153,10 @@ Open **http://localhost:8080**. The database is filled with sample events on sta
 | Admin | `admin@eventsphere.com` | `admin123` |
 | Student | `student@eventsphere.com` | `student123` |
 
+To list these logins on the login page (handy for a live demo), start with
+`--app.show-demo-accounts=true`. Before sharing the site publicly, change the passwords with the
+`APP_SEED_ADMIN_PASSWORD` and `APP_SEED_STUDENT_PASSWORD` environment variables.
+
 ### Useful URLs
 
 | URL | What |
