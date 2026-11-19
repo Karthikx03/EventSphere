@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head(${event.title})}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: flash}"></div>
+
+<main class="container mt-3">
+    <a th:href="@{/events}" class="small"><i class="bi bi-arrow-left"></i> All events</a>
+    <div class="row g-4 mt-1">
+        <div class="col-lg-8">
+            <span class="badge es-badge" th:classappend="'cat-' + ${#strings.toLowerCase(event.category.name())}"
+                  th:text="${event.category.displayName}">Tech</span>
+            <h1 class="fw-bold mt-2" th:text="${event.title}">Title</h1>
+            <ul class="list-unstyled text-muted mt-3">
+                <li class="mb-1"><i class="bi bi-calendar-event me-2"></i>
+                    <span th:text="${#temporals.format(event.startTime, 'EEEE, dd MMMM yyyy · hh:mm a')}">date</span></li>
+                <li><i class="bi bi-geo-alt me-2"></i><span th:text="${event.venue}">venue</span></li>
+            </ul>
+            <h2 class="h5 fw-bold mt-4">About this event</h2>
+            <p class="es-description" th:text="${event.description}">Description</p>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card es-form-card">
+                <div class="card-body p-4">
+                    <div class="es-price fs-3" th:text="${event.free} ? 'Free' : ${currency} + ${#numbers.formatDecimal(event.price, 1, 2)}">Free</div>
+                    <small class="text-muted">per seat</small>
+
+                    <div class="progress es-progress mt-3 mb-1">
+                        <div class="progress-bar" th:style="'width:' + ${event.occupancyPercent} + '%'"></div>
+                    </div>
+                    <small class="text-muted" th:text="${event.availableSeats} + ' of ' + ${event.capacity} + ' seats left'">seats</small>
+
+                    <div class="mt-4">
+                        <div th:if="${event.past}" class="alert alert-secondary m-0">This event has already started.</div>
+                        <div th:if="${!event.past and event.soldOut}" class="alert alert-warning m-0">Sold out.</div>
+
+                        <th:block th:if="${!event.past and !event.soldOut}">
+                            <form sec:authorize="isAuthenticated()" th:action="@{/events/{id}/book(id=${event.id})}" method="post">
+                                <label for="seats" class="form-label">Seats</label>
+                                <select id="seats" name="seats" class="form-select mb-3">
+                                    <option th:each="n : ${#numbers.sequence(1, maxSeats)}"
+                                            th:value="${n}" th:text="${n}">1</option>
+                                </select>
+                                <button type="submit" class="btn btn-accent w-100 btn-lg">Book now</button>
+                            </form>
+                            <a sec:authorize="isAnonymous()" th:href="@{/login}" class="btn btn-primary w-100">Log in to book</a>
+                        </th:block>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<th:block th:replace="~{fragments/layout :: footer}"></th:block>
+</body>
+</html>

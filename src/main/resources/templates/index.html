@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Home')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<header class="es-hero">
+    <div class="container py-5">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-7">
+                <span class="es-eyebrow">Campus events, one place</span>
+                <h1 class="display-5 fw-bold mt-2">Discover, book and manage every event on campus.</h1>
+                <p class="lead text-white-50 mt-3">Workshops, hackathons, fests and talks. Grab your seat in seconds
+                    and keep all your tickets in one place.</p>
+                <div class="d-flex gap-2 mt-4">
+                    <a th:href="@{/events}" class="btn btn-accent btn-lg">Browse events</a>
+                    <a sec:authorize="isAnonymous()" th:href="@{/register}" class="btn btn-outline-light btn-lg">Create account</a>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="row g-3">
+                    <div class="col-6"><div class="es-stat"><div class="es-stat-num" th:text="${stats.upcomingEvents}">0</div><div>Upcoming events</div></div></div>
+                    <div class="col-6"><div class="es-stat"><div class="es-stat-num" th:text="${stats.confirmedBookings}">0</div><div>Tickets booked</div></div></div>
+                    <div class="col-6"><div class="es-stat"><div class="es-stat-num" th:text="${stats.registeredUsers}">0</div><div>Members</div></div></div>
+                    <div class="col-6"><div class="es-stat"><div class="es-stat-num" th:text="${categories.length}">0</div><div>Categories</div></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div th:replace="~{fragments/layout :: flash}"></div>
+
+<main class="container mt-4">
+    <div class="d-flex justify-content-between align-items-end mb-3">
+        <h2 class="h4 fw-bold m-0">Happening soon</h2>
+        <a th:href="@{/events}" class="small">See all <i class="bi bi-arrow-right"></i></a>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-4" th:each="e : ${featured}">
+            <div th:replace="~{fragments/layout :: eventCard(${e})}"></div>
+        </div>
+        <p th:if="${#lists.isEmpty(featured)}" class="text-muted">No upcoming events yet.</p>
+    </div>
+
+    <h2 class="h4 fw-bold mt-5 mb-3">Browse by category</h2>
+    <div class="d-flex flex-wrap gap-2">
+        <a th:each="c : ${categories}" th:href="@{/events(category=${c})}"
+           class="btn btn-light es-chip" th:text="${c.displayName}">Category</a>
+    </div>
+</main>
+
+<th:block th:replace="~{fragments/layout :: footer}"></th:block>
+</body>
+</html>

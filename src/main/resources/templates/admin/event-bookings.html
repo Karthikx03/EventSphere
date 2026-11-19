@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Attendees')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<main class="container mt-4">
+    <a th:href="@{/admin}" class="small"><i class="bi bi-arrow-left"></i> Dashboard</a>
+    <h1 class="h3 fw-bold mt-2" th:text="'Attendees · ' + ${event.title}">Attendees</h1>
+    <p class="text-muted" th:text="${event.seatsBooked} + ' of ' + ${event.capacity} + ' seats booked'">seats</p>
+
+    <div class="card es-form-card">
+        <div class="table-responsive">
+            <table class="table align-middle m-0">
+                <thead><tr><th>Ticket</th><th>Name</th><th>Email</th><th class="text-end">Seats</th><th>Status</th><th>Booked at</th></tr></thead>
+                <tbody>
+                <tr th:each="b : ${bookings}">
+                    <td class="font-monospace" th:text="${b.ticketCode}">EVS</td>
+                    <td th:text="${b.user.fullName}">name</td>
+                    <td th:text="${b.user.email}">email</td>
+                    <td class="text-end" th:text="${b.seats}">1</td>
+                    <td><span class="badge" th:classappend="${b.status.name() == 'CONFIRMED'} ? 'text-bg-success' : 'text-bg-secondary'" th:text="${b.status}">s</span></td>
+                    <td class="small" th:text="${#temporals.format(b.bookedAt, 'dd MMM yyyy, hh:mm a')}">date</td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(bookings)}"><td colspan="6" class="text-center text-muted py-4">No bookings yet.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+<th:block th:replace="~{fragments/layout :: footer}"></th:block>
+</body>
+</html>

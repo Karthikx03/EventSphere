@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('My tickets')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: flash}"></div>
+
+<main class="container mt-3">
+    <h1 class="h3 fw-bold mb-3">My tickets</h1>
+
+    <div th:if="${#lists.isEmpty(bookings)}" class="es-empty text-center py-5">
+        <i class="bi bi-ticket-perforated display-5 text-muted"></i>
+        <p class="mt-3 mb-1 fw-semibold">You haven't booked anything yet.</p>
+        <a th:href="@{/events}">Find an event</a>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-6" th:each="b : ${bookings}">
+            <div class="card es-ticket" th:classappend="${b.status.name() == 'CANCELLED'} ? 'is-cancelled'">
+                <div class="card-body d-flex justify-content-between gap-3">
+                    <div>
+                        <a class="h5 fw-bold d-block text-decoration-none" th:href="@{/events/{id}(id=${b.event.id})}"
+                           th:text="${b.event.title}">Event</a>
+                        <div class="text-muted small"><i class="bi bi-calendar-event me-1"></i>
+                            <span th:text="${#temporals.format(b.event.startTime, 'dd MMM yyyy · hh:mm a')}">date</span></div>
+                        <div class="text-muted small"><i class="bi bi-geo-alt me-1"></i><span th:text="${b.event.venue}">venue</span></div>
+                        <div class="small mt-2">
+                            <span th:text="${b.seats} + ' seat(s)'">1 seat</span> ·
+                            <span th:text="${b.totalAmount.signum() == 0} ? 'Free' : ${currency} + ${#numbers.formatDecimal(b.totalAmount, 1, 2)}">Free</span>
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <div class="es-ticket-code" th:text="${b.ticketCode}">EVS-XXXX</div>
+                        <span class="badge mt-2" th:classappend="${b.status.name() == 'CONFIRMED'} ? 'text-bg-success' : 'text-bg-secondary'"
+                              th:text="${b.status}">CONFIRMED</span>
+                        <form th:if="${b.cancellable}" th:action="@{/bookings/{id}/cancel(id=${b.id})}" method="post" class="mt-2"
+                              onsubmit="return confirm('Cancel this booking?');">
+                            <button class="btn btn-sm btn-outline-danger" type="submit">Cancel</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<th:block th:replace="~{fragments/layout :: footer}"></th:block>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Admin dashboard')}"></head>
+<body>
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+<div th:replace="~{fragments/layout :: flash}"></div>
+
+<main class="container mt-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 fw-bold m-0">Admin dashboard</h1>
+        <a th:href="@{/admin/events/new}" class="btn btn-accent"><i class="bi bi-plus-lg me-1"></i>New event</a>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3"><div class="es-kpi"><div class="es-kpi-num" th:text="${stats.totalEvents}">0</div>Total events</div></div>
+        <div class="col-6 col-md-3"><div class="es-kpi"><div class="es-kpi-num" th:text="${stats.upcomingEvents}">0</div>Upcoming</div></div>
+        <div class="col-6 col-md-3"><div class="es-kpi"><div class="es-kpi-num" th:text="${stats.confirmedBookings}">0</div>Confirmed bookings</div></div>
+        <div class="col-6 col-md-3"><div class="es-kpi"><div class="es-kpi-num" th:text="${currency} + ${#numbers.formatDecimal(stats.revenue, 1, 2)}">0</div>Revenue</div></div>
+    </div>
+
+    <div class="card es-form-card">
+        <div class="table-responsive">
+            <table class="table align-middle m-0">
+                <thead>
+                <tr>
+                    <th>Event</th><th>Date</th><th>Category</th><th class="text-end">Booked</th><th class="text-end">Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="e : ${events}" th:classappend="${e.past} ? 'text-muted'">
+                    <td><a th:href="@{/events/{id}(id=${e.id})}" th:text="${e.title}" class="fw-semibold">Event</a>
+                        <div class="small text-muted" th:text="${e.venue}">venue</div></td>
+                    <td class="small" th:text="${#temporals.format(e.startTime, 'dd MMM yyyy, hh:mm a')}">date</td>
+                    <td><span class="badge es-badge" th:classappend="'cat-' + ${#strings.toLowerCase(e.category.name())}" th:text="${e.category.displayName}">cat</span></td>
+                    <td class="text-end" th:text="${e.seatsBooked} + ' / ' + ${e.capacity}">0 / 0</td>
+                    <td class="text-end text-nowrap">
+                        <a th:href="@{/admin/events/{id}/bookings(id=${e.id})}" class="btn btn-sm btn-light" title="Attendees"><i class="bi bi-people"></i></a>
+                        <a th:href="@{/admin/events/{id}/edit(id=${e.id})}" class="btn btn-sm btn-light" title="Edit"><i class="bi bi-pencil"></i></a>
+                        <form th:action="@{/admin/events/{id}/delete(id=${e.id})}" method="post" class="d-inline"
+                              onsubmit="return confirm('Delete this event?');">
+                            <button class="btn btn-sm btn-light text-danger" type="submit" title="Delete"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+<th:block th:replace="~{fragments/layout :: footer}"></th:block>
+</body>
+</html>
