@@ -243,6 +243,8 @@ class BrowserFlowTest {
 
     @Test
     void unknownUrlShowsFriendly404() throws Exception {
+        // logged-out visitors are sent to the login page first (secure by default), so check as a user
+        login("student@eventsphere.com", "student123");
         Page page = get("/no-such-page");
         assertThat(page.status).isEqualTo(404);
         assertThat(page.body).contains("That page does not exist").doesNotContain("Exception");
